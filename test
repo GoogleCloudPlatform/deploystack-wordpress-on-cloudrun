@@ -1,0 +1,112 @@
+# DON'T REMOVE FROM test script.
+CYAN='\033[0;36m'
+BCYAN='\033[1;36m'
+NC='\033[0m' # No Color
+DIVIDER=$(printf %"$(tput cols)"s | tr " " "*")
+DIVIDER+="\n"
+
+function get_project_id() {
+    local __resultvar=$1
+    VALUE=$(gcloud config get-value project | xargs)
+    eval $__resultvar="'$VALUE'"
+}
+
+function get_project_number() {
+    local __resultvar=$1
+    local PRO=$2
+    VALUE=$(gcloud projects list --filter="project_id=$PRO" --format="value(PROJECT_NUMBER)" | xargs)
+    eval $__resultvar="'$VALUE'"
+}
+
+# DISPLAY HELPERS
+function section_open() {
+    section_description=$1
+    printf "$DIVIDER"
+    printf "${CYAN}$section_description${NC} \n"
+    printf "$DIVIDER"
+}
+
+function section_close() {
+    printf "$DIVIDER"
+    printf "${CYAN}$section_description ${BCYAN}- done${NC}\n"
+    printf "\n\n"
+}
+
+function evalTest() {
+    local command=$1
+    local expected=$2
+
+    local ERR=""
+    got=$(eval $command 2>errFile)
+    ERR=$(<errFile)
+
+    if [ ${#ERR} -gt 0 ]; then
+        if [ "$expected" = "EXPECTERROR" ]; then
+            printf "Expected Error thrown \n"
+            return
+        fi
+
+        printf "Halting - error: '$ERR'  \n"
+        exit 1
+    fi
+
+    if [ "$got" != "$expected" ]; then
+        printf "Halting: '$got' expected '$expected'  \n"
+        exit 1
+    fi
+
+    printf "$expected is ok\n"
+}
+# END DON'T REMOVE FROM test script.
+
+get_project_id PROJECT
+get_project_number PROJECT_NUMBER $PROJECT
+# TODO: Script is pretty rudimentary, so make sure all of these variables are actually needed for test
+PROJECT_ID=[SET VALUE HERE]
+WORDPRESS_IMAGE=[SET VALUE HERE]
+ 
+
+gcloud config set project ${PROJECT}
+
+terraform init
+# TODO: Make sure all of these variables are correct and actually need to be passed in.:
+terraform apply  \
+   -var project_id=$PROJECT_ID \
+   -var wordpress_image=$WORDPRESS_IMAGE \
+   -auto-approve
+
+
+section_open "Test google_vpc_access_connector exists"
+
+    evalTest 'gcloud compute networks vpc-access connectors describe ${local.prefix}wp-connector --zone $ZONE --format="value(name)"' "${local.prefix}wp-connector"
+section_close
+
+
+# TODO: Make sure all of these variables are correct and actually need to be passed in.:
+terraform destroy  \
+   -var cloud_run_invoker=$CLOUD_RUN_INVOKER \
+   -var cloudsql_password=$CLOUDSQL_PASSWORD \
+   -var connector=$CONNECTOR \
+   -var create_connector=$CREATE_CONNECTOR \
+   -var ip_ranges=$IP_RANGES \
+   -var prefix=$PREFIX \
+   -var principals=$PRINCIPALS \
+   -var project_create=$PROJECT_CREATE \
+   -var project_id=$PROJECT_ID \
+   -var region=$REGION \
+   -var wordpress_image=$WORDPRESS_IMAGE \
+   -var wordpress_password=$WORDPRESS_PASSWORD \
+   -var wordpress_port=$WORDPRESS_PORT \
+   -auto-approve
+
+
+section_open "Test google_vpc_access_connector does not exists"
+    
+    evalTest 'gcloud compute networks vpc-access connectors describe ${local.prefix}wp-connector --zone $ZONE --format="value(name)"' "EXPECTERROR"
+section_close
+
+
+printf "$DIVIDER"
+printf "CONGRATS!!!!!!! \n"
+printf "You got the end the of your test with everything working. \n"
+printf "$DIVIDER"
