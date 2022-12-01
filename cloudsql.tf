@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-
 resource "random_password" "cloudsql_password" {
   length = 8
 }
 
 # create a VPC for CloudSQL
 module "vpc" {
-  source     = "../../../../modules/net-vpc"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc"
   project_id = module.project.project_id
   name       = "${local.prefix}sql-vpc"
   subnets = [
@@ -38,7 +37,6 @@ module "vpc" {
   }
 }
 
-
 # create a VPC connector for the ClouSQL VPC
 resource "google_vpc_access_connector" "connector" {
   count         = var.create_connector ? 1 : 0
@@ -49,10 +47,9 @@ resource "google_vpc_access_connector" "connector" {
   network       = module.vpc.self_link
 }
 
-
 # Set up CloudSQL
 module "cloudsql" {
-  source           = "../../../../modules/cloudsql-instance"
+  source           = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance"
   project_id       = module.project.project_id
   network          = module.vpc.self_link
   name             = "${local.prefix}mysql"

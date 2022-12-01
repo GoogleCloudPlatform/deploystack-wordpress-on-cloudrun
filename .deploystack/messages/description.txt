@@ -1,0 +1,4 @@
+This process will configure the following resources:
+* Cloud Run
+* Cloud SQL
+* VPC Serverless Connector
