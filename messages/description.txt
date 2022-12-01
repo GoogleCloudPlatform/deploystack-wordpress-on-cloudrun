@@ -1,4 +1,0 @@
-This process will configure the following resources:
-* Aggregated audit log sink at the organization level
-* BigQuery dataset with proper read / own rights
-* One service account to allow the log sink to write to BigQuery
