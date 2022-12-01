@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 locals {
   all_principals_iam = [for k in var.principals : "user:${k}"]
   cloudsql_conf = {
@@ -39,10 +38,9 @@ locals {
   wp_pass   = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
 }
 
-
 # either create a project or set up the given one
 module "project" {
-  source          = "../../../../modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project"
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
@@ -61,15 +59,13 @@ module "project" {
   ]
 }
 
-
 resource "random_password" "wp_password" {
   length = 8
 }
 
-
 # create the Cloud Run service
 module "cloud_run" {
-  source     = "../../../../modules/cloud-run"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run"
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
   region     = var.region
