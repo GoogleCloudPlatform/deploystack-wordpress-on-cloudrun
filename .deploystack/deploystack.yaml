@@ -6,23 +6,17 @@
 "collect_zone": false
 "prepend_project": true
 "custom_settings":
-  - 1:
-    "name": "dataset_id"
+  - "name": "dataset_id"
     "description": "Please enter the dataset id to create"
-  - 2:
-    "name": "owners_group_email"
+  - "name": "owners_group_email"
     "description": "Dataset Owner Group: Please enter the email IDs for identity groups of users who own the dataset."
-  - 3:
-    "name": "readers_group_email"
+  - "name": "readers_group_email"
     "description": "Dataset Reader Group: Please enter the email IDs for identity groups of users who can read the dataset."
-  - 3:
-    "name": "filter"
+  - "name": "filter"
     "description": "Please enter the logging filters query to apply when exporting logs."
     "default": ""
-  - 4:
-    "name": "location"
+  - "name": "location"
     "description": "Please enter the dataset location."
     "default": "EU"
-  - 5:
-    "name": "org_id"
+  - "name": "org_id"
     "description": "Please enter the Organization Id."
