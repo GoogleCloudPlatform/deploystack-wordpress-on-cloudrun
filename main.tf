@@ -34,13 +34,11 @@ locals {
   }
   connector = var.connector == null ? google_vpc_access_connector.connector.0.self_link : var.connector
   prefix    = var.prefix == null ? "" : "${var.prefix}-"
-  wp_user   = "user"
-  wp_pass   = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
 }
 
 # either create a project or set up the given one
 module "project" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v19.0.0"
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
@@ -65,7 +63,7 @@ resource "random_password" "wp_password" {
 
 # create the Cloud Run service
 module "cloud_run" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run?ref=v19.0.0"
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
   region     = var.region
@@ -83,13 +81,10 @@ module "cloud_run" {
       env_from = null
       # set up the database connection
       env = {
-        "APACHE_HTTP_PORT_NUMBER" : var.wordpress_port
-        "WORDPRESS_DATABASE_HOST" : module.cloudsql.ip
-        "WORDPRESS_DATABASE_NAME" : local.cloudsql_conf.db
-        "WORDPRESS_DATABASE_USER" : local.cloudsql_conf.user
-        "WORDPRESS_DATABASE_PASSWORD" : var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-        "WORDPRESS_USERNAME" : local.wp_user
-        "WORDPRESS_PASSWORD" : local.wp_pass
+        "WORDPRESS_DB_HOST" : module.cloudsql.ip
+        "WORDPRESS_DB_NAME" : local.cloudsql_conf.db
+        "WORDPRESS_DB_USER" : local.cloudsql_conf.user
+        "WORDPRESS_DB_PASSWORD" : var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
       }
     }
     resources     = null

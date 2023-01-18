@@ -20,7 +20,7 @@ resource "random_password" "cloudsql_password" {
 
 # create a VPC for CloudSQL
 module "vpc" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v19.0.0"
   project_id = module.project.project_id
   name       = "${local.prefix}sql-vpc"
   subnets = [
@@ -49,7 +49,7 @@ resource "google_vpc_access_connector" "connector" {
 
 # Set up CloudSQL
 module "cloudsql" {
-  source           = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance"
+  source           = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance?ref=v19.0.0"
   project_id       = module.project.project_id
   network          = module.vpc.self_link
   name             = "${local.prefix}mysql"

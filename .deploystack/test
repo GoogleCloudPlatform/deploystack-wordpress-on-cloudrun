@@ -77,8 +77,11 @@ terraform apply  \
 
 
 section_open "Test google_vpc_access_connector exists"
+    evalTest 'gcloud compute networks vpc-access connectors describe ${local.prefix}wp-connector --zone $ZONE --format="value(name)"' ""
+section_close
 
-    evalTest 'gcloud compute networks vpc-access connectors describe ${local.prefix}wp-connector --zone $ZONE --format="value(name)"' "${local.prefix}wp-connector"
+section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project exists"
+    evalTest 'gcloud projects describe var.project_id --format="value(name)"' ""
 section_close
 
 
@@ -101,8 +104,11 @@ terraform destroy  \
 
 
 section_open "Test google_vpc_access_connector does not exists"
-    
     evalTest 'gcloud compute networks vpc-access connectors describe ${local.prefix}wp-connector --zone $ZONE --format="value(name)"' "EXPECTERROR"
+section_close
+
+section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project does not exists"
+    evalTest 'gcloud projects describe var.project_id --format="value(name)"' "EXPECTERROR"
 section_close
 
 
