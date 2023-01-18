@@ -47,18 +47,18 @@ git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 Before you deploy the architecture, you will need at least the following information (for more precise configuration see the Variables section):
 
 * The project ID.
-* A Google Cloud Registry path to a Wordpress container image.
+* A Google Artifact Registry path to a Wordpress container image.
 
 ### Step 1: Add Wordpress image
 
-In order to deploy the Wordpress service to Cloud Run, you need to store the [Wordpress image](https://hub.docker.com/r/bitnami/wordpress/) in Google Cloud Registry (GCR).
+In order to deploy the Wordpress service to Cloud Run, you need to store the [Wordpress image](https://hub.docker.com/_/wordpress) in Google Artifact Registry (GAR).
 
-Make sure that the Google Container Registry API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `MY_PROJECT` placeholder:
+Make sure that the Google Artifact Registry API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `{MY_PROJECT}` placeholder and the region you chose to create a new registry (example `europe-west1`) in place of the `{REGION}` placeholder:
 
 ``` {shell}
-docker pull bitnami/wordpress:6.0.2
-docker tag bitnami/wordpress:6.0.2 gcr.io/MY_PROJECT/wordpress
-docker push gcr.io/MY_PROJECT/wordpress
+docker pull wordpress:6.1.1-apache
+docker tag wordpress:6.1.1-apache {REGION}-docker.pkg.dev/{MY_PROJECT}/wordpress:6.1.1-apache
+docker push {REGION}-docker.pkg.dev/{MY_PROJECT}/wordpress:6.1.1-apache
 ```
 
 **Note**: This example has been built for this particular Docker image. If you decide to use another one, this example might not work (or you can edit the variables in the Terraform files).
