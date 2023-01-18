@@ -1,22 +1,23 @@
-"title": "Organization audit logs to BigQuery dataset"
+"title": "Wordpress deployment on Cloud Run"
 "duration": 1
 "collect_project": true
-"collect_region": false
+"collect_region": true
 "collect_project_number": false
 "collect_zone": false
 "prepend_project": true
 "custom_settings":
-  - "name": "dataset_id"
-    "description": "Please enter the dataset id to create"
-  - "name": "owners_group_email"
-    "description": "Dataset Owner Group: Please enter the email IDs for identity groups of users who own the dataset."
-  - "name": "readers_group_email"
-    "description": "Dataset Reader Group: Please enter the email IDs for identity groups of users who can read the dataset."
-  - "name": "filter"
-    "description": "Please enter the logging filters query to apply when exporting logs."
+  - "name": "project_id"
+    "description": "Project ID"
     "default": ""
-  - "name": "location"
+  - "name": "prefix"
+    "description": "Unique prefix used for resource names"
+    "default": "deploystack"
+  - "name": "region"
+    "description": "The region where resources will be deployed"
+    "default": "europe-west1"
+  - "name": "wordpress_image"
     "description": "Please enter the dataset location."
-    "default": "EU"
-  - "name": "org_id"
-    "description": "Please enter the Organization Id."
+    "default": "mirror.gcr.io/library/wordpress"
+  - "name": "cloud_run_invoker"
+    "description": "IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone)"
+    "default": "allUsers"
