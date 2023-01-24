@@ -12,7 +12,7 @@ This architecture can be used for the following use cases and more:
 
 # Architecture
 
-![Wordpress on Cloud Run](images/architecture.png "Wordpress on Cloud Run")
+![Wordpress on Cloud Run](architecture.png "Wordpress on Cloud Run")
 
 The main components that are deployed in this architecture are the following (you can learn about them by following the hyperlinks):
 
@@ -30,70 +30,50 @@ This example will deploy all its resources into the project defined by the `proj
 
 If `project_create` is left to null, the identity performing the deployment needs the `owner` role on the project defined by the `project_id` variable. Otherwise, the identity performing the deployment needs `resourcemanager.projectCreator` on the resource hierarchy node specified by `project_create.parent` and `billing.user` on the billing account specified by `project_create.billing_account_id`.
 
-## Deployment
+### Spinning up the architecture
 
-### Step 0: Cloning the repository
+Before we deploy the architecture, you will need the following information:
 
-If you want to deploy from your Cloud Shell, click on the image below, sign in if required and when the prompt appears, click on “confirm”.
-
-[![Open Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fdeploystack-wordpress-on-cloudrun)
-
-Otherwise, in your console of choice:
-
-```bash
-git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
-```
-
-Before you deploy the architecture, you will need at least the following information (for more precise configuration see the Variables section):
-
-* The project ID.
-* A Google Artifact Registry path to a Wordpress container image.
-
-### Step 1: Add Wordpress image
-
-In order to deploy the Wordpress service to Cloud Run, you need to store the [Wordpress image](https://hub.docker.com/_/wordpress) in Google Artifact Registry (GAR).
-
-Make sure that the Google Artifact Registry API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `{MY_PROJECT}` placeholder and the region you chose to create a new registry (example `europe-west1`) in place of the `{REGION}` placeholder:
-
-``` {shell}
-docker pull wordpress:6.1.1-apache
-docker tag wordpress:6.1.1-apache {REGION}-docker.pkg.dev/{MY_PROJECT}/wordpress:6.1.1-apache
-docker push {REGION}-docker.pkg.dev/{MY_PROJECT}/wordpress:6.1.1-apache
-```
-
-**Note**: This example has been built for this particular Docker image. If you decide to use another one, this example might not work (or you can edit the variables in the Terraform files).
-
-### Step 2: Prepare the variables
-
-Once you have the required information, head back to your cloned repository. Make sure you’re in the directory of this tutorial (where this README is in).
-
-Configure the Terraform variables in your `terraform.tfvars` file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter. See the variables documentation below.
+* The __service project ID__.
+* A __unique prefix__ that you want all the deployed resources to have (for example: awesomestartup). This must be a string with no spaces or tabs.
+* A __Wordpress image__ if you want to use your own, otherwise you can use the provided standard image.
+* A __list of Groups or Users__ with Service Account Token creator role on Service Accounts in IAM format, eg 'group:group@domain.com'.
 
 **Notes**:
 
-1. If you will want to change your admin password later on, please note that it will only work in the admin interface of Wordpress, but not with redeploying with Terraform, since Wordpress writes that password into the database upon installation and ignores the environment variables (that you can change with Terraform) after that.
+1. If you want to change your admin password later on, please note that you can only do so via the Wordpress user interface.
 2. If you have the [domain restriction org. policy](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) on your organization, you have to edit the `cloud_run_invoker` variable and give it a value that will be accepted in accordance to your policy.
 
-### Step 3: Deploy resources
+Click on the button below, sign in if required and when the prompt appears, click on “confirm”. It will walk you through setting up your architecture.
 
-Initialize your Terraform environment and deploy the resources:
+[![Open Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fdeploystack-wordpress-on-cloudrun)
 
-``` {shell}
-terraform init
-terraform apply
-```
 
-The resource creation will take a few minutes.
+This is the startup screen that appears after clicking the button and confirming:
 
-**Note**: you might get the following error (or a similar one):
+![cloud_shell](cloud_shell.png)
+
+During the process, you will be asked for some user input. All necessary variables are explained at the bottom of this ReadMe file. In case of failure, you can simply click the button again.
+
+<center>
+<h4>🎉 Congratulations! 🎉  <br />
+You have successfully deployed the foundation for running Wordpress using CloudRun on Google Cloud.</h4></center>
+
+
+**Note**: 
+You might get the following error (or a similar one):
 
 ``` {shell}
 │ Error: resource is in failed state "Ready:False", message: Revision '...' is not ready and cannot serve traffic.│
 ```
 
-You might try to reapply at this point, the Cloud Run service just needs several minutes.
+In case this happens, manually run
+``` {shell}
+    deploystack install
+```
+to run the installation again.
 
-### Step 4: Use the created resources
+### Using the Wordpress Installation
 
 Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
 
@@ -103,15 +83,14 @@ terraform output
 terraform output cloud_run_service
 ```
 
-1. Open your browser at the URL that you get with that last command, and you will see your Wordpress installation.
-2. Add "/admin" in the end of the URL and log in to the admin interface, using the outputs "wp_user" and "wp_password".
+When clicking on the Wordpress link, it will immediately prompt you to register as an administrator. The password will be pre-filled and can be changed after registration. 
 
-## Cleaning up your environment
+## Cleaning Up Your Environment
 
-The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
+The easiest way to remove all deployed resources is to run the following command in Cloud Shell:
 
 ``` {shell}
-terraform destroy
+deploystack uninstall
 ```
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.
@@ -119,21 +98,21 @@ The above command will delete the associated resources so there will be no billa
 
 ## Variables
 
-| name | description | type | required | default |
+| name | description | type | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L78) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [wordpress_image](variables.tf#L89) | Image to run with Cloud Run, starts with \"gcr.io\" | <code>string</code> | ✓ |  |
-| [cloud_run_invoker](variables.tf#L18) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone) | <code>string</code> |  | <code>&#34;allUsers&#34;</code> |
-| [cloudsql_password](variables.tf#L24) | CloudSQL password (will be randomly generated by default) | <code>string</code> |  | <code>null</code> |
-| [connector](variables.tf#L30) | Existing VPC serverless connector to use if not creating a new one | <code>string</code> |  | <code>null</code> |
-| [create_connector](variables.tf#L36) | Should a VPC serverless connector be created or not | <code>bool</code> |  | <code>true</code> |
-| [ip_ranges](variables.tf#L43) | CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC | <code title="object&#40;&#123;&#10;  connector &#61; string&#10;  psa       &#61; string&#10;  sql_vpc   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  connector &#61; &#34;10.8.0.0&#47;28&#34;&#10;  psa       &#61; &#34;10.60.0.0&#47;24&#34;&#10;  sql_vpc   &#61; &#34;10.0.0.0&#47;20&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [prefix](variables.tf#L57) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  | <code>&#34;&#34;</code> |
-| [principals](variables.tf#L63) | List of users to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator), eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [project_create](variables.tf#L69) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_id](variables.tf#L78) | Project id, references existing project if `project_create` is null. | <code>string</code> | |
+| [wordpress_image](variables.tf#L89) | Image to run with Cloud Run, starts with \"gcr.io\" | <code>string</code> | mirror.gcr.io/library/wordpress |
+| [cloud_run_invoker](variables.tf#L18) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone) | <code>string</code> | <code>&#34;allUsers&#34;</code> |
+| [cloudsql_password](variables.tf#L24) | CloudSQL password (will be randomly generated by default) | <code>string</code> |  <code>null</code> |
+| [connector](variables.tf#L30) | Existing VPC serverless connector to use if not creating a new one | <code>string</code> |  <code>null</code> |
+| [create_connector](variables.tf#L36) | Should a VPC serverless connector be created or not | <code>bool</code> |  <code>true</code> |
+| [ip_ranges](variables.tf#L43) | CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC | <code title="object&#40;&#123;&#10;  connector &#61; string&#10;  psa       &#61; string&#10;  sql_vpc   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | <code title="&#123;&#10;  connector &#61; &#34;10.8.0.0&#47;28&#34;&#10;  psa       &#61; &#34;10.60.0.0&#47;24&#34;&#10;  sql_vpc   &#61; &#34;10.0.0.0&#47;20&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [prefix](variables.tf#L57) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  <code>&#34;&#34;</code> |
+| [principals](variables.tf#L63) | List of users to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator), eg 'user@domain.com'. | <code>list&#40;string&#41;</code> | <code>&#91;&#93;</code> |
+| [project_create](variables.tf#L69) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | <code>null</code> |
 | [region](variables.tf#L83) | Region for the created resources | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
-| [wordpress_password](variables.tf#L94) | Password for the Wordpress user (will be randomly generated by default) | <code>string</code> |  | <code>null</code> |
-| [wordpress_port](variables.tf#L100) | Port for the Wordpress image | <code>number</code> |  | <code>8080</code> |
+| [wordpress_password](variables.tf#L94) | Password for the Wordpress user (will be randomly generated by default) | <code>string</code> | <code>null</code> |
+| [wordpress_port](variables.tf#L100) | Port for the Wordpress image | <code>number</code> | <code>8080</code> |
 
 ## Outputs
 
