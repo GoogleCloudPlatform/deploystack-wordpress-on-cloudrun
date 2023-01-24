@@ -5,6 +5,8 @@
 "collect_project_number": false
 "collect_zone": false
 "prepend_project": true
+"region_type": "compute"
+"region_default": "europe-west1"
 "custom_settings":
   - "name": "project_id"
     "description": "Project ID"
