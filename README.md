@@ -99,7 +99,7 @@ The above command will delete the associated resources so there will be no billa
 ## Variables
 
 | name | description | type | default |
-|---|---|:---:|:---:|:---:|
+|---|---|:---:|:---:|
 | [project_id](variables.tf#L78) | Project id, references existing project if `project_create` is null. | <code>string</code> | |
 | [wordpress_image](variables.tf#L89) | Image to run with Cloud Run, starts with \"gcr.io\" | <code>string</code> | mirror.gcr.io/library/wordpress |
 | [cloud_run_invoker](variables.tf#L18) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone) | <code>string</code> | <code>&#34;allUsers&#34;</code> |
