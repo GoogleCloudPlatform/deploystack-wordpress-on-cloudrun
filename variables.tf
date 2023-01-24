@@ -89,7 +89,7 @@ variable "region" {
 variable "wordpress_image" {
   type        = string
   description = "Image to run with Cloud Run, starts with \"gcr.io\" or \"REGION-docker.pkg.dev\""
-  default = "mirror.gcr.io/library/wordpress"
+  default     = "mirror.gcr.io/library/wordpress"
 }
 
 variable "wordpress_port" {
