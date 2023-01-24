@@ -20,10 +20,6 @@ The main components that are deployed in this architecture are the following (yo
 * [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
 * [VPC Serverless Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access): Solution to access the CloudSQL VPC from Cloud Run, using only internal IP addresses
 
-# Setup
-
-## Prerequisites
-
 ### Setting up the project for the deployment
 
 This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. However, if you provide the appropriate values to the `project_create` variable, the project will be created as part of the deployment.
@@ -95,6 +91,9 @@ deploystack uninstall
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.
 <!-- BEGIN TFDOC -->
+
+## Special Thanks
+A special thank you goes out to Natalia Strelkova (skalolazka) and Grigory Movsesyan, the original developers of this example architecture.
 
 ## Variables
 
