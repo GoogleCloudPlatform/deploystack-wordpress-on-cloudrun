@@ -1,5 +1,5 @@
 "title": "Wordpress deployment on Cloud Run"
-"duration": 1
+"duration": 10
 "collect_project": true
 "collect_region": true
 "collect_project_number": false
