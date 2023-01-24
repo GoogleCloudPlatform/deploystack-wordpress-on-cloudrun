@@ -16,7 +16,7 @@
     "description": "The region where resources will be deployed"
     "default": "europe-west1"
   - "name": "wordpress_image"
-    "description": "Please enter the dataset location."
+    "description": "Image to run with Cloud Run"
     "default": "mirror.gcr.io/library/wordpress"
   - "name": "cloud_run_invoker"
     "description": "IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone)"
