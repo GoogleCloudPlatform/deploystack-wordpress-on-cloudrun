@@ -13,10 +13,10 @@
 # limitations under the License.
 
 steps:
-   - name: 'gcr.io/cloudshell-images/cloudshell:latest'
+   - name: 'laurentgrangeau/deploystack-cicd-image:latest'
      entrypoint: bash
      args: [ './.deploystack/clean' ]
-   - name: 'gcr.io/cloudshell-images/cloudshell:latest'
+   - name: 'laurentgrangeau/deploystack-cicd-image:latest'
      entrypoint: bash
      args: [ './.deploystack/test' ]
 timeout: 2200s
