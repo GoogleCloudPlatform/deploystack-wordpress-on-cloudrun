@@ -89,7 +89,7 @@ terraform apply  \
    -auto-approve
 
 section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v19.0.0 exists"
-    evalTest 'gcloud compute networks vpc-access connectors describe ${PREFIX}-wp-connector --region ${REGION} --format="value(name)"' "${PREFIX}-wp-connector"
+    evalTest 'gcloud compute networks vpc-access connectors describe ${PREFIX}-wp-connector --region ${REGION} --format="value(name)"' "projects/${PROJECT}/locations/${REGION}/connectors/${PREFIX}-wp-connector"
 section_close
 
 terraform destroy  \
