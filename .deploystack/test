@@ -88,7 +88,7 @@ terraform apply  \
    -var project_id=$PROJECT_ID \
    -auto-approve
 
-section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v19.0.0 exists"
+section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v20.0.0 exists"
     evalTest 'gcloud compute networks vpc-access connectors describe ${PREFIX}-wp-connector --region ${REGION} --format="value(name)"' "projects/${PROJECT}/locations/${REGION}/connectors/${PREFIX}-wp-connector"
 section_close
 
@@ -97,7 +97,7 @@ terraform destroy  \
    -var project_id=$PROJECT_ID \
    -auto-approve
 
-section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v19.0.0 does not exists"
+section_open "Test github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v20.0.0 does not exists"
     evalTest 'gcloud compute networks vpc-access connectors describe ${PREFIX}-wp-connector --region ${REGION} --format="value(name)"' "EXPECTERROR"
 section_close
 
