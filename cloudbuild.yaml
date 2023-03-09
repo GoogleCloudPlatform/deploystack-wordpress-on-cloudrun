@@ -1,0 +1,10 @@
+steps:
+  - name: 'hashicorp/terraform'
+    args:
+      - 'init'
+  - name: 'hashicorp/terraform'
+    args: ['plan', '-var', 'project_id=$PROJECT_ID', '-var', 'prefix=deploystack']
+  - name: 'hashicorp/terraform'
+    args: ['apply', '-var', 'project_id=$PROJECT_ID', '-var', 'prefix=deploystack', '-auto-approve']
+  - name: 'hashicorp/terraform'
+    args: ['destroy', '-var', 'project_id=$PROJECT_ID', '-var', 'prefix=deploystack', '-auto-approve']
