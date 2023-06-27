@@ -9,6 +9,8 @@ _This architecture uses click-to-deploy so you can spin up infrastructure in min
 
 Cloud Run allows you to deploy your WordPress application quickly and easily, with a few clicks or commands. You can deploy your application from a container image stored in a container registry or directly from a Git repository. This click-to-deploy architecture leverages the serverless and scalability benefits of using Cloud Run to host a Wordpress Application connected to a PostgreSQL instance.
 
+This repo is based on the Cloud Foundation Fabric blueprint available [here](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/third-party-solutions/wordpress/cloudrun).
+
 ## Use cases
 
 These are some of the use cases you can build on top of this infrastructure:
