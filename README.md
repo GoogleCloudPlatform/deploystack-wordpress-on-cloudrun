@@ -1,5 +1,5 @@
 [![GC Start](gcp_banner.png)](https://cloud.google.com/?utm_source=github&utm_medium=referral&utm_campaign=GCP&utm_content=packages_repository_banner)
-# Host a Wordpress Application on Cloud Run
+# Host a Serverless Wordpress Site with Cloud Run
 
 ## Introduction
 
