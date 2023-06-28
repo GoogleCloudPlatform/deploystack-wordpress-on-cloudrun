@@ -1,17 +1,24 @@
 [![GC Start](gcp_banner.png)](https://cloud.google.com/?utm_source=github&utm_medium=referral&utm_campaign=GCP&utm_content=packages_repository_banner)
-# Wordpress deployment on Cloud Run
+# Host a Serverless Wordpress Site with Cloud Run
 
-43% of the Web is built on Wordpress. Because of its simplicity and versatility, Wordpress can be used for internal websites as well as customer facing e-commerce platforms in small to large businesses, while still offering security.
+## Introduction
 
-This repository contains the necessary Terraform files to deploy a functioning new Wordpress website exposed to the public internet with minimal technical overhead.
+_This architecture uses click-to-deploy so you can spin up infrastructure in minutes using terraform!_
+
+43% of the Web is built on Wordpress. Because of its simplicity and versatility, Wordpress can be used for internal websites and customer facing e-commerce platforms in small to large businesses, while still offering security. **Cloud Run automatically scales your WordPress application to handle any amount of traffic**, without requiring manual intervention. This means that your website can handle large traffic spikes, without worrying about capacity.
+
+Cloud Run allows you to deploy your WordPress application quickly and easily, with a few clicks or commands. You can deploy your application from a container image stored in a container registry or directly from a Git repository. This click-to-deploy architecture leverages the serverless and scalability benefits of using Cloud Run to host a Wordpress Application connected to a PostgreSQL instance.
 
 This repo is based on the Cloud Foundation Fabric blueprint available [here](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/third-party-solutions/wordpress/cloudrun).
 
-This architecture can be used for the following use cases and more:
+## Use cases
 
-* Blog
-* Intranet / internal Wiki
-* E-commerce platform
+These are some of the use cases you can build on top of this infrastructure:
+* Business websites
+* E-commerce websites
+* Portfolios
+* Non-profit websites
+* Educational Websites
 
 # Architecture
 
