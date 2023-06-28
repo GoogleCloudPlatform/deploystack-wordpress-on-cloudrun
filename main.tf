@@ -68,17 +68,16 @@ module "cloud_run" {
   name       = "${local.prefix}cr-wordpress"
   region     = var.region
 
-  containers = [{
-    image = var.wordpress_image
-    ports = [{
-      name           = "http1"
-      protocol       = null
-      container_port = var.wordpress_port
-    }]
-    options = {
-      command  = null
-      args     = null
-      env_from = null
+  containers = {
+    wordpress = {
+      image = var.wordpress_image
+      ports = {
+        http = {
+          container_port = var.wordpress_port
+          name           = "http1"
+          protocol       = null
+        }
+      }
       # set up the database connection
       env = {
         "WORDPRESS_DB_HOST" : module.cloudsql.ip
@@ -87,9 +86,7 @@ module "cloud_run" {
         "WORDPRESS_DB_PASSWORD" : var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
       }
     }
-    resources     = null
-    volume_mounts = null
-  }]
+  }
 
   iam = {
     "roles/run.invoker" : [var.cloud_run_invoker]
