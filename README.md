@@ -20,7 +20,7 @@ These are some of the use cases you can build on top of this infrastructure:
 * Non-profit websites
 * Educational Websites
 
-# Architecture
+## Architecture
 
 ![Wordpress on Cloud Run](architecture.png "Wordpress on Cloud Run")
 
@@ -30,13 +30,18 @@ The main components that are deployed in this architecture are the following (yo
 * [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
 * [VPC Serverless Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access): Solution to access the CloudSQL VPC from Cloud Run, using only internal IP addresses
 
-### Setting up the project for the deployment
+## Costs
+
+Pricing Estimates - We have created a sample estimate based on some usage we see from new startups looking to scale. This estimate would give you an idea of how much this deployment would essentially cost per month at this scale and you extend it to the scale you further prefer. Here's the [link](https://cloud.google.com/products/calculator#id=8a7471c9-98df-4b71-97de-6222d22484c8).
+
+
+## Setting up the project for the deployment
 
 This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. However, if you provide the appropriate values to the `project_create` variable, the project will be created as part of the deployment.
 
 If `project_create` is left to null, the identity performing the deployment needs the `owner` role on the project defined by the `project_id` variable. Otherwise, the identity performing the deployment needs `resourcemanager.projectCreator` on the resource hierarchy node specified by `project_create.parent` and `billing.user` on the billing account specified by `project_create.billing_account_id`.
 
-### Spinning up the architecture
+## Spinning up the architecture
 
 Before we deploy the architecture, you will need the following information:
 
@@ -79,7 +84,7 @@ In case this happens, manually run
 ```
 to run the installation again.
 
-### Using the Wordpress Installation
+## Using the Wordpress Installation
 
 Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
 
