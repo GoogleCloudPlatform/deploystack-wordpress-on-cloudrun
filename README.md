@@ -41,7 +41,7 @@ This example will deploy all its resources into the project defined by the `proj
 
 If `project_create` is left to null, the identity performing the deployment needs the `owner` role on the project defined by the `project_id` variable. Otherwise, the identity performing the deployment needs `resourcemanager.projectCreator` on the resource hierarchy node specified by `project_create.parent` and `billing.user` on the billing account specified by `project_create.billing_account_id`.
 
-## Spinning up the architecture
+## Deploy the architecture
 
 Before we deploy the architecture, you will need the following information:
 

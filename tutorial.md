@@ -31,7 +31,7 @@ Before we deploy the architecture, you will need the following information:
 1. If you want to change your admin password later on, please note that you can only do so via the Wordpress user interface.
 2. If you have the domain restriction org. policy on your organization, you have to edit the cloud_run_invoker variable and give it a value that will be accepted in accordance to your policy.
 
-## Spinning up the architecture
+## Deploy the architecture
 Congratulations! At this point you should have successfully deployed the foundations for running Wordpress using CloudRun on Google Cloud.
 
 ### Note: 
