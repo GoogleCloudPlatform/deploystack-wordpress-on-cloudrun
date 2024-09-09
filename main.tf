@@ -63,7 +63,7 @@ resource "random_password" "wp_password" {
 
 # create the Cloud Run service
 module "cloud_run" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run?ref=v23.0.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run?ref=v34.1.0"
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
   region     = var.region
