@@ -5,7 +5,17 @@
 
 version: 2
 updates:
-  - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - directories:
+      - /
+    commit-message:
+      prefix: "chore(deps)"
+    package-ecosystem: "terraform"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    groups:
+      terraform:
+        applies-to: version-updates
+        patterns:
+          - hashicorp/*
+          - terraform-google-modules/*
+          - GoogleCloudPlatform/*

@@ -17,7 +17,7 @@
 locals {
   all_principals_iam = [for k in var.principals : "user:${k}"]
   cloudsql_conf = {
-    database_version = "MYSQL_8_0"
+    database_version = "MYSQL_8_4"
     tier             = "db-g1-small"
     db               = "wp-mysql"
     user             = "admin"
@@ -38,14 +38,13 @@ locals {
 
 # either create a project or set up the given one
 module "project" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v23.0.0"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v34.1.0"
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
   iam             = var.project_create != null ? local.iam : {}
-  iam_additive    = var.project_create == null ? local.iam : {}
   services = [
     "run.googleapis.com",
     "logging.googleapis.com",
@@ -63,7 +62,7 @@ resource "random_password" "wp_password" {
 
 # create the Cloud Run service
 module "cloud_run" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run?ref=v23.0.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run?ref=v34.1.0"
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
   region     = var.region

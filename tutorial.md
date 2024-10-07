@@ -1,6 +1,5 @@
 # Host a Serverless Wordpress Site with Cloud Run
 
-
 ## Let's get started!
 
 This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. 
@@ -15,7 +14,6 @@ Otherwise, the identity performing the deployment needs `resourcemanager.project
 
 Click the **Start** button to move to the next step.
 
-
 ## Information required
 
 Before we deploy the architecture, you will need the following information:
@@ -24,7 +22,6 @@ Before we deploy the architecture, you will need the following information:
 * A __unique prefix__ that you want all the deployed resources to have (for example: awesomestartup). This must be a string with no spaces or tabs.
 * A __Wordpress image__ if you want to use your own, otherwise you can use the provided standard image.
 * A __list of Groups or Users__ with Service Account Token creator role on Service Accounts in IAM format, eg 'group:group@domain.com'.
-
 
 ### Notes:
 
@@ -40,7 +37,6 @@ Congratulations! At this point you should have successfully deployed the foundat
 ```
 Error: resource is in failed state "Ready:False", message: Revision '...' is not ready and cannot serve traffic.
 ```
-
 
 In case this happens, manually run the following command to run the installation again
 
@@ -61,7 +57,6 @@ or for the concrete variable:
 ``` bash
 terraform output cloud_run_service
 ```
-
 
 When clicking on the Wordpress link, it will immediately prompt you to register as an administrator. 
 
