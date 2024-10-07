@@ -107,6 +107,16 @@ deploystack uninstall
 The above command will delete the associated resources so there will be no billable charges made afterwards.
 <!-- BEGIN TFDOC -->
 
+## Standalone deployment
+
+Since the scripts are based on Terraform, it is possible to deploy this solution through `Terraform` directly, without having to go through `Deploystack`.
+Just clone this repo, create a `terraform.tfvars` file with your own values and call the following commands:
+``` {shell}
+terraform init
+terraform plan -out=execplan.out
+terraform apply execplan.out
+```
+
 ## Special Thanks
 A special thank you goes out to Natalia Strelkova (skalolazka) and Grigory Movsesyan, the original developers of this example architecture.
 
