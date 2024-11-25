@@ -20,7 +20,7 @@ resource "random_password" "cloudsql_password" {
 
 # create a VPC for CloudSQL
 module "vpc" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v34.1.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v36.0.1"
   project_id = module.project.project_id
   name       = "${local.prefix}sql-vpc"
   subnets = [
