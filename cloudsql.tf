@@ -49,7 +49,7 @@ resource "google_vpc_access_connector" "connector" {
 
 # Set up CloudSQL
 module "cloudsql" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance?ref=v34.1.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance?ref=v38.0.0"
   project_id = module.project.project_id
   network_config = {
     connectivity = {
