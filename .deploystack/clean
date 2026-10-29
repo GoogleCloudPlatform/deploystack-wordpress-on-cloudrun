@@ -96,7 +96,8 @@ section_open "Delete VPC Access connector"
 section_close
 
 section_open "Delete global address"
-    gcloud compute addresses delete cloud-sql --global -q
+    gcloud compute addresses delete servicenetworking-googleapis-com-cloud-sql --global -q || true
+    gcloud compute addresses delete cloud-sql --global -q || true
 section_close
 
 section_open "Delete Private Service Access"
@@ -105,6 +106,10 @@ section_close
 
 section_open "Delete subnets"
     gcloud compute networks subnets delete subnet --region ${REGION} -q
+section_close
+
+section_open "Delete custom routes"
+    gcloud compute routes delete ${PREFIX}-sql-vpc-directpath-googleapis ${PREFIX}-sql-vpc-private-googleapis ${PREFIX}-sql-vpc-restricted-googleapis -q || true
 section_close
 
 section_open "Delete VPC"

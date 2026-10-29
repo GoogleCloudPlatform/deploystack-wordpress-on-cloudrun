@@ -62,6 +62,8 @@ When clicking on the Wordpress link, it will immediately prompt you to register 
 
 The password will be pre-filled and can be changed after registration.
 
+For production customization — including mounting a **Cloud Storage bucket** for persistent media uploads (`wp-content/uploads`), baking **custom themes and plugins** into an Artifact Registry image, and managing **WordPress core updates** — see the [Customizing & Operating WordPress on Cloud Run](https://github.com/GoogleCloudPlatform/deploystack-wordpress-on-cloudrun/blob/main/README.md#customizing--operating-wordpress-on-cloud-run) section in the `README.md`.
+
 ## Cleaning Up Your Environment
 The easiest way to remove all deployed resources is to run the following command in Cloud Shell:
 
