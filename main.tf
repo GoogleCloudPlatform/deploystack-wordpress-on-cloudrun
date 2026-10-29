@@ -46,6 +46,7 @@ module "project" {
   prefix          = var.project_create == null ? null : var.prefix
   iam             = var.project_create != null ? local.iam : {}
   services = [
+    "iam.googleapis.com",
     "run.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
@@ -66,6 +67,10 @@ module "cloud_run" {
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
   region     = var.region
+
+  service_account_config = {
+    create = false
+  }
 
   containers = {
     wordpress = {
