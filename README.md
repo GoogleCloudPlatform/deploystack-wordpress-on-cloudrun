@@ -96,6 +96,109 @@ terraform output cloud_run_service
 
 When clicking on the Wordpress link, it will immediately prompt you to register as an administrator. The password will be pre-filled and can be changed after registration. 
 
+## Customizing & Operating WordPress on Cloud Run
+
+Because Cloud Run containers are stateless and use an ephemeral filesystem, local filesystem changes made at runtime (such as media uploads or plugins/themes installed through the WordPress Admin UI) do not persist across container restarts or scale-out events. Below is how to configure persistent storage, custom plugins/themes, and WordPress version updates.
+
+### 1. Persistent Media Storage with Cloud Storage
+
+You have two options to persist media uploads (`/var/www/html/wp-content/uploads`) in a Google Cloud Storage (GCS) bucket:
+
+#### Option A: Cloud Run Gen2 Cloud Storage Volume Mount (Terraform)
+
+Cloud Run (2nd generation execution environment) supports mounting a Cloud Storage bucket directly into the container via Cloud Storage FUSE. Add a GCS bucket module and mount it into `module "cloud_run"` in `main.tf`:
+
+```hcl
+module "uploads_bucket" {
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs?ref=v59.2.0"
+  project_id = module.project.project_id
+  prefix     = var.prefix
+  name       = "wp-uploads"
+  location   = var.region
+}
+```
+
+Then in `module "cloud_run"` (`main.tf`), add the `uploads` volume, mount it to `/var/www/html/wp-content/uploads`, and enable the Gen2 execution environment:
+
+```hcl
+  containers = {
+    wordpress = {
+      # ... existing image, ports, env ...
+      volume_mounts = {
+        "cloudsql" = "/cloudsql"
+        "uploads"  = "/var/www/html/wp-content/uploads"
+      }
+    }
+  }
+
+  volumes = {
+    "cloudsql" = {
+      cloud_sql_instances = [module.cloudsql.connection_name]
+    }
+    "uploads" = {
+      gcs = {
+        bucket       = module.uploads_bucket.name
+        is_read_only = false
+      }
+    }
+  }
+
+  service_config = {
+    gen2_execution_environment = true
+    ingress                    = "INGRESS_TRAFFIC_ALL"
+    scaling = {
+      min_instance_count = 1
+      max_instance_count = 2
+    }
+  }
+```
+
+#### Option B: WP-Stateless Plugin
+
+Alternatively, bake the [WP-Stateless](https://wordpress.org/plugins/wp-stateless/) plugin into your container image to offload media uploads directly to a Cloud Storage bucket via the GCS API without using a FUSE mount.
+
+### 2. Adding Custom Themes and Plugins
+
+To ensure themes and plugins persist across container scaling and revisions, package them into a custom container image stored in [Artifact Registry](https://cloud.google.com/artifact-registry):
+
+1. Create a `Dockerfile` that extends the official WordPress image and copies or installs your themes and plugins:
+
+```dockerfile
+FROM mirror.gcr.io/library/wordpress:6.7-php8.3-apache
+
+# Copy custom themes or plugins from your repository
+COPY ./themes/my-theme /var/www/html/wp-content/themes/my-theme
+COPY ./plugins/my-plugin /var/www/html/wp-content/plugins/my-plugin
+
+# Or download plugins directly from WordPress.org during build
+RUN apt-get update && apt-get install -y --no-install-recommends unzip curl \
+    && curl -sL https://downloads.wordpress.org/plugin/wp-stateless.latest-stable.zip -o /tmp/wp-stateless.zip \
+    && unzip -q /tmp/wp-stateless.zip -d /var/www/html/wp-content/plugins/ \
+    && rm -f /tmp/wp-stateless.zip \
+    && chown -R www-data:www-data /var/www/html/wp-content \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+2. Build and push the image to Artifact Registry using Cloud Build:
+
+``` {shell}
+gcloud artifacts repositories create wordpress-repo \
+  --repository-format=docker \
+  --location=europe-west1
+
+gcloud builds submit \
+  --tag europe-west1-docker.pkg.dev/YOUR_PROJECT_ID/wordpress-repo/wordpress:v1
+```
+
+3. Pass your custom image URI via the `wordpress_image` variable when deploying (`wordpress_image = "europe-west1-docker.pkg.dev/YOUR_PROJECT_ID/wordpress-repo/wordpress:v1"`).
+
+### 3. Managing WordPress Updates
+
+* **How `mirror.gcr.io/library/wordpress` works**: By default, this stack uses `mirror.gcr.io/library/wordpress`, which is Google Cloud's pull-through cache of the official [Docker Hub `wordpress` image](https://hub.docker.com/_/wordpress) maintained by the WordPress Docker community.
+* **Updating WordPress safely**: Because Cloud Run containers are immutable, do not run core or plugin updates from the WordPress Admin dashboard in production (those changes only affect a single ephemeral container instance). Instead:
+  1. Pin a specific version tag in your `Dockerfile` or `wordpress_image` variable (for example, `mirror.gcr.io/library/wordpress:6.7.2-php8.3-apache`).
+  2. When a new WordPress version is released, rebuild/re-tag your image (or bump the `wordpress_image` tag) and run `terraform apply` (or `gcloud run services update`) to roll out a new Cloud Run revision with zero downtime.
+
 ## Cleaning Up Your Environment
 
 The easiest way to remove all deployed resources is to run the following command in Cloud Shell:
@@ -105,11 +208,11 @@ deploystack uninstall
 ```
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.
-<!-- BEGIN TFDOC -->
 
 ## Standalone deployment
 
-Since the scripts are based on Terraform, it is possible to deploy this solution through `Terraform` directly, without having to go through `Deploystack`.
+Since the scripts are based on Terraform (`>= 1.12.2`), it is possible to deploy this solution through `Terraform` directly, without having to go through `Deploystack`. (When using `deploystack install`, `.deploystack/scripts/preinit.sh` automatically upgrades Terraform if the Cloud Shell image has an older version installed; for standalone deployments in Cloud Shell, run `tfswitch 1.12.2` or `. .deploystack/scripts/preinit.sh` first.)
+
 Just clone this repo, create a `terraform.tfvars` file with your own values and call the following commands:
 ``` {shell}
 terraform init
@@ -119,6 +222,8 @@ terraform apply execplan.out
 
 ## Special Thanks
 A special thank you goes out to Natalia Strelkova (skalolazka) and Grigory Movsesyan, the original developers of this example architecture.
+
+<!-- BEGIN TFDOC -->
 
 ## Variables
 
