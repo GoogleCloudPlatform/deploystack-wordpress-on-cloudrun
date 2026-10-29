@@ -32,17 +32,17 @@ locals {
     "roles/iam.serviceAccountUser"         = local.all_principals_iam
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
-  connector = var.connector == null ? google_vpc_access_connector.connector.0.self_link : var.connector
+  connector = var.connector == null ? google_vpc_access_connector.connector[0].id : var.connector
   prefix    = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 # either create a project or set up the given one
 module "project" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v34.1.0"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v59.2.0"
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
+  project_reuse   = var.project_create != null ? null : {}
   prefix          = var.project_create == null ? null : var.prefix
   iam             = var.project_create != null ? local.iam : {}
   services = [
@@ -62,7 +62,7 @@ resource "random_password" "wp_password" {
 
 # create the Cloud Run service
 module "cloud_run" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run?ref=v34.1.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-run-v2?ref=v59.2.0"
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
   region     = var.region
@@ -74,7 +74,6 @@ module "cloud_run" {
         http = {
           container_port = var.wordpress_port
           name           = "http1"
-          protocol       = null
         }
       }
       # set up the database connection
@@ -84,6 +83,15 @@ module "cloud_run" {
         "WORDPRESS_DB_USER" : local.cloudsql_conf.user
         "WORDPRESS_DB_PASSWORD" : var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
       }
+      volume_mounts = {
+        "cloudsql" = "/cloudsql"
+      }
+    }
+  }
+
+  volumes = {
+    "cloudsql" = {
+      cloud_sql_instances = [module.cloudsql.connection_name]
     }
   }
 
@@ -91,17 +99,21 @@ module "cloud_run" {
     "roles/run.invoker" : [var.cloud_run_invoker]
   }
 
-  revision_annotations = {
-    autoscaling = {
-      min_scale = 1
-      max_scale = 2
+  revision = {
+    # connect to VPC and allow all traffic
+    vpc_access = {
+      connector = local.connector
+      egress    = "ALL_TRAFFIC"
     }
-    # connect to CloudSQL
-    cloudsql_instances  = [module.cloudsql.connection_name]
-    vpcaccess_connector = null
-    # allow all traffic
-    vpcaccess_egress    = "all-traffic"
-    vpcaccess_connector = local.connector
   }
-  ingress_settings = "all"
+
+  service_config = {
+    ingress = "INGRESS_TRAFFIC_ALL"
+    scaling = {
+      min_instance_count = 1
+      max_instance_count = 2
+    }
+  }
+
+  deletion_protection = false
 }

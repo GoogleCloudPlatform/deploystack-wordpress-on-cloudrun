@@ -20,7 +20,7 @@ resource "random_password" "cloudsql_password" {
 
 # create a VPC for CloudSQL
 module "vpc" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v34.1.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v59.2.0"
   project_id = module.project.project_id
   name       = "${local.prefix}sql-vpc"
   subnets = [
@@ -49,7 +49,7 @@ resource "google_vpc_access_connector" "connector" {
 
 # Set up CloudSQL
 module "cloudsql" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance?ref=v34.1.0"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloudsql-instance?ref=v59.2.0"
   project_id = module.project.project_id
   network_config = {
     connectivity = {
@@ -58,12 +58,13 @@ module "cloudsql" {
       }
     }
   }
-  name                    = "${local.prefix}mysql"
-  region                  = var.region
-  database_version        = local.cloudsql_conf.database_version
-  tier                    = local.cloudsql_conf.tier
-  databases               = [local.cloudsql_conf.db]
-  gcp_deletion_protection = false
+  name                          = "${local.prefix}mysql"
+  region                        = var.region
+  database_version              = local.cloudsql_conf.database_version
+  tier                          = local.cloudsql_conf.tier
+  databases                     = [local.cloudsql_conf.db]
+  gcp_deletion_protection       = false
+  terraform_deletion_protection = false
   users = {
     "${local.cloudsql_conf.user}" = {
       password = var.cloudsql_password

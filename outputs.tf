@@ -16,7 +16,7 @@
 
 output "cloud_run_service" {
   description = "CloudRun service URL"
-  value       = module.cloud_run.service.status[0].url
+  value       = module.cloud_run.service_uri
 }
 
 output "cloudsql_password" {
