@@ -81,6 +81,10 @@ REGION=europe-west1
 
 gcloud config set project ${PROJECT}
 
+if [ -f ".deploystack/scripts/preinit.sh" ]; then
+    . .deploystack/scripts/preinit.sh
+fi
+
 terraform init
 
 terraform apply  \
