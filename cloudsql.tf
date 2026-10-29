@@ -32,6 +32,7 @@ module "vpc" {
   ]
   psa_configs = [{
     deletion_policy = "ABANDON"
+    range_prefix    = ""
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }

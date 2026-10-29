@@ -109,7 +109,7 @@ section_open "Delete subnets"
 section_close
 
 section_open "Delete custom routes"
-    gcloud compute routes delete ${PREFIX}-sql-vpc-private-googleapis ${PREFIX}-sql-vpc-restricted-googleapis -q || true
+    gcloud compute routes delete ${PREFIX}-sql-vpc-directpath-googleapis ${PREFIX}-sql-vpc-private-googleapis ${PREFIX}-sql-vpc-restricted-googleapis -q || true
 section_close
 
 section_open "Delete VPC"
