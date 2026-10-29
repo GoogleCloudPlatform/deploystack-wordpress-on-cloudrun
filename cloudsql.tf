@@ -47,6 +47,8 @@ resource "google_vpc_access_connector" "connector" {
   region        = var.region
   ip_cidr_range = var.ip_ranges.connector
   network       = module.vpc.self_link
+  min_instances = 2
+  max_instances = 3
 }
 
 # Set up CloudSQL
